@@ -1,0 +1,5 @@
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\Testing\bin\Debug\04.HelloWorld.exe.config
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\Testing\bin\Debug\04.HelloWorld.exe
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\Testing\bin\Debug\04.HelloWorld.pdb
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\Testing\obj\Debug\04.HelloWorld.exe
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\Testing\obj\Debug\04.HelloWorld.pdb

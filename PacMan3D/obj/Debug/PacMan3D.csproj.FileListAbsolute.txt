@@ -1,0 +1,6 @@
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\bin\Debug\04.HelloWorld.exe.config
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\bin\Debug\04.HelloWorld.exe
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\bin\Debug\04.HelloWorld.pdb
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\obj\Debug\PacMan3D.csprojResolveAssemblyReference.cache
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\obj\Debug\04.HelloWorld.exe
+D:\todor\work\Telerik\homeworks\C# part 2\Team Centaur\PacMan3D\obj\Debug\04.HelloWorld.pdb
