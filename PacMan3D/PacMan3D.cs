@@ -5,6 +5,7 @@ using System.Threading;
 
 struct Element
 {
+    //adding comment
     // define new object type with structure
     // screen position x,y
     public int x;
