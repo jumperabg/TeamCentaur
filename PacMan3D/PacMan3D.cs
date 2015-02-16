@@ -20,13 +20,11 @@ class PacMan3D
     {
         #region Memory Initialization
 
-        // set console size (screen resolution)
-        Console.BufferHeight = Console.WindowHeight = 21;
-        Console.BufferWidth = Console.WindowWidth = 40;
+        int playfieldHeight;
+        int playfieldWidth;
 
-        // set playfield size
-        int playfieldHeight = Console.WindowHeight - 1;
-        int playfieldWidth = Console.WindowWidth - 20;
+        //Method for creating playing field
+        SetPlayfieldSize(out playfieldHeight, out playfieldWidth);
 
         // define hero pacMan as a variable of type element
         Element pacMan = new Element();
@@ -115,6 +113,17 @@ class PacMan3D
 
             Thread.Sleep(150);  // control game speed
         }
+    }
+
+    private static void SetPlayfieldSize(out int playfieldHeight, out int playfieldWidth)
+    {
+        // set console size (screen resolution)
+        Console.BufferHeight = Console.WindowHeight = 21;
+        Console.BufferWidth = Console.WindowWidth = 40;
+
+        // set playfield size
+        playfieldHeight = Console.WindowHeight - 1;
+        playfieldWidth = Console.WindowWidth - 20;
     }
 
     static void PrintElement(Element thisObject)
