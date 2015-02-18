@@ -13,106 +13,200 @@ struct Element
     // type of game object is defined by ASCII char
     public char skin;
     public ConsoleColor colour;
+    public string direction;
 }
 
 class PacMan3D
 {
+    //Global variables
+    public static Element enemy = new Element();
+    public static Element pacMan = new Element();
+    public static string[] labyrinth;
+
+    public static int playfieldHeight;
+    public static int playfieldWidth;
+
+    //Is game over ?
+    public static bool isGameOver = false;
+
+
     static void Main()
     {
         #region Memory Initialization
 
-        int playfieldHeight;
-        int playfieldWidth;
 
         //Method for creating playing field
         SetPlayfieldSize(out playfieldHeight, out playfieldWidth);
 
         // define hero pacMan as a variable of type element
-        Element pacMan = new Element();
+
+
+
         // initial pacman position in center of playfield
-        pacMan.x = playfieldWidth / 2;
+        pacMan.x = (playfieldWidth + 1) / 2 + 1;
         pacMan.y = playfieldHeight / 2;
         pacMan.skin = (char)9787; // utf8 decimal code 9787 (smile face) is our hero character
         pacMan.colour = ConsoleColor.Yellow;
 
+
+
+        // initial pacman position in center of playfield
+        enemy.x = 5;
+        enemy.y = 1;
+        enemy.skin = (char)9785; // utf8 decimal code 9787 (smile face) is our hero character
+        enemy.colour = ConsoleColor.Red;
+        enemy.direction = "right";
+
         // define labyrinth variable and build example
-        string[] labyrinth = new string[playfieldHeight];
-        Random rand = new Random();
-        for (int row = 0; row < playfieldHeight; row++)
+        //Test map
+        labyrinth = new string[20]{
+            "####################",
+            "#                  #",
+            "#          ####### #",
+            "#  #########     # #",
+            "# ##         # # # #",
+            "#  # ######### # # #",
+            "#  # #           # #",
+            "#  # #    #### ### #",
+            "# ## #       # # # #",
+            "#  # # ####  # # # #",
+            "#  # # #  #  # # # #",
+            "#  # # ## #        #",
+            "# ## #    #  # # # #",
+            "#### ######  # # # #",
+            "#            #     #",
+            "#   #              #",
+            "#  #               #",
+            "#  ########### ### #",
+            "#                  #",
+            "####################"
+        };
+
+        #endregion
+        // Main game logic
+        while (true)
         {
-            for (int col = 0; col < playfieldWidth; col++)
+            MoveEnemy();
+            MovePacMan();
+
+            if (isGameOver)
             {
-                if (row == playfieldHeight / 2 && col == playfieldWidth / 2)
+                break;
+            }
+            CheckForImpact();
+
+            PrintFrame();
+
+            Thread.Sleep(50);  // control game speed
+        }
+    }
+
+    private static void CheckForImpact()
+    {
+        //Check for impact
+        if (enemy.x == pacMan.x && enemy.y == pacMan.y)
+        {
+            Console.WriteLine("Game Over !");
+            isGameOver = true;
+        }
+    }
+
+
+
+    private static void PrintFrame()
+    {
+        Console.Clear();    // fast screen clear
+        PrintLabyrinth(labyrinth);
+        PrintElement(pacMan);
+        PrintElement(enemy);
+    }
+
+    private static void MovePacMan()
+    {
+        while (Console.KeyAvailable)
+        {
+            // we assign the pressed key value to a variable pressedKey
+            ConsoleKeyInfo pressedKey = Console.ReadKey(true);
+            // next we start checking the value of the pressed key and take action if neccessary
+            if (pressedKey.Key == ConsoleKey.LeftArrow && pacMan.x > 1) // if left arrow is pressed then
+            {
+                if (labyrinth[pacMan.y][pacMan.x - 1] != '#')
                 {
-                    labyrinth[row] += " ";
-                    continue;
+                    pacMan.x = pacMan.x - 1;
                 }
-                int chance = rand.Next(1, 101);
-                if (chance < 20)
+            }
+            else if (pressedKey.Key == ConsoleKey.RightArrow && pacMan.x < playfieldWidth - 1)
+            {
+                if (labyrinth[pacMan.y][pacMan.x + 1] != '#')
                 {
-                    labyrinth[row] += "#";
+
+                    pacMan.x = pacMan.x + 1;
                 }
-                else
+            }
+            else if (pressedKey.Key == ConsoleKey.UpArrow && pacMan.y > 1)
+            {
+                if (labyrinth[pacMan.y - 1][pacMan.x] != '#')
                 {
-                    labyrinth[row] += " ";
+                    pacMan.y = pacMan.y - 1;
+                }
+            }
+            else if (pressedKey.Key == ConsoleKey.DownArrow && pacMan.y < playfieldHeight - 1)
+            {
+                if (labyrinth[pacMan.y + 1][pacMan.x] != '#')
+                {
+                    pacMan.y = pacMan.y + 1;
                 }
             }
         }
+    }
 
-        #endregion
+    private static void MoveEnemy()
+    {
+        /*Move enemy
+            1-right
+            2-left
+            3-up
+            4-down
 
-        while (true)
+            */
+
+        if (enemy.direction == "right" && (labyrinth[enemy.y][enemy.x + 1] == '#'))
         {
-            #region Build Frame
+            enemy.direction = "down";
+        }
 
-            // move PacMan
-            while (Console.KeyAvailable)
-            {
-                // we assign the pressed key value to a variable pressedKey
-                ConsoleKeyInfo pressedKey = Console.ReadKey(true);
-                // next we start checking the value of the pressed key and take action if neccessary
-                if (pressedKey.Key == ConsoleKey.LeftArrow && pacMan.x > 1) // if left arrow is pressed then
-                {
-                    if (labyrinth[pacMan.y][pacMan.x - 1] != '#')
-                    {
-                        pacMan.x = pacMan.x - 1;
-                    }
-                }
-                else if (pressedKey.Key == ConsoleKey.RightArrow && pacMan.x < playfieldWidth - 1)
-                {
-                    if (labyrinth[pacMan.y][pacMan.x + 1] != '#')
-                    {
+        if (enemy.direction == "down" && (labyrinth[enemy.y + 1][enemy.x] == '#'))
+        {
+            enemy.direction = "left";
+        }
 
-                        pacMan.x = pacMan.x + 1;
-                    }
-                }
-                else if (pressedKey.Key == ConsoleKey.UpArrow && pacMan.y > 1)
-                {
-                    if (labyrinth[pacMan.y - 1][pacMan.x] != '#')
-                    {
-                        pacMan.y = pacMan.y - 1;
-                    }
-                }
-                else if (pressedKey.Key == ConsoleKey.DownArrow && pacMan.y < playfieldHeight - 1)
-                {
-                    if (labyrinth[pacMan.y + 1][pacMan.x] != '#')
-                    {
-                        pacMan.y = pacMan.y + 1;
-                    }
-                }
-            }
+        if (enemy.direction == "left" && (labyrinth[enemy.y][enemy.x - 1] == '#'))
+        {
+            enemy.direction = "up";
+        }
 
-            #endregion
+        if (enemy.direction == "up" && labyrinth[enemy.y - 1][enemy.x] == '#')
+        {
+            enemy.direction = "right";
+        }
 
-            #region Print Frame
 
-            Console.Clear();    // fast screen clear
-            PrintLabyrinth(labyrinth);
-            PrintElement(pacMan);
 
-            #endregion
-
-            Thread.Sleep(150);  // control game speed
+        if (enemy.direction == "right")
+        {
+            enemy.x += 1;
+        }
+        if (enemy.direction == "down")
+        {
+            enemy.y += 1;
+        }
+        if (enemy.direction == "left")
+        {
+            enemy.x -= 1;
+        }
+        if (enemy.direction == "up")
+        {
+            enemy.y -= 1;
         }
     }
 
