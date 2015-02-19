@@ -14,21 +14,27 @@ struct Element
     public char skin;
     public ConsoleColor colour;
     public string direction;
+    public string lastDirection;
+
 }
 
 class PacMan3D
 {
     //Global variables
     public static Element enemy = new Element();
+    public static Element enemy2 = new Element();
+
     public static Element pacMan = new Element();
     public static string[] labyrinth;
 
     public static int playfieldHeight;
     public static int playfieldWidth;
 
-    //Is game over ?
+    //Check if the game is over variable
     public static bool isGameOver = false;
 
+    //Enemy Even move counter
+    public static long enemyEvenMoveCounter = 1;
 
     static void Main()
     {
@@ -38,9 +44,6 @@ class PacMan3D
         //Method for creating playing field
         SetPlayfieldSize(out playfieldHeight, out playfieldWidth);
 
-        // define hero pacMan as a variable of type element
-
-
 
         // initial pacman position in center of playfield
         pacMan.x = (playfieldWidth + 1) / 2 + 1;
@@ -49,62 +52,127 @@ class PacMan3D
         pacMan.colour = ConsoleColor.Yellow;
 
 
-
-        // initial pacman position in center of playfield
+        //Enemy stats
         enemy.x = 5;
         enemy.y = 1;
         enemy.skin = (char)9785; // utf8 decimal code 9787 (smile face) is our hero character
         enemy.colour = ConsoleColor.Red;
         enemy.direction = "right";
+        enemy.lastDirection = "right";
+
+
+        enemy2.x = 15;
+        enemy2.y = 15;
+        enemy2.skin = (char)9785; // utf8 decimal code 9787 (smile face) is our hero character
+        enemy2.colour = ConsoleColor.Green;
+        enemy2.direction = "left";
 
         // define labyrinth variable and build example
         //Test map
         labyrinth = new string[20]{
             "####################",
+            "#         #        #",
+            "#  ## ##  #  ####  #",
+            "#  ## ##  #  ####  #",
             "#                  #",
-            "#          ####### #",
-            "#  #########     # #",
-            "# ##         # # # #",
-            "#  # ######### # # #",
-            "#  # #           # #",
+            "#  ####      ####  #",
+            "#                  #",
+            "#####   ###    #####",
+            "#   # #  #  #  #   #",
+            "#   # ##   ##  #   #",
+            "#     #  #  #      #",
+            "#  #    ###    #   #",
+            "#  #           #   #",
+            "#     #######      #",
+            "#        #         #",
+            "#  ###   #    ###  #",
+            "#                  #",
+            "#     #######      #",
+            "#        #         #",
+            "####################"
+        };
+        /*
+            "####################",
+            "##        #        #",
+            "#                # #",
+            "#  # #### ##     # #",
+            "# #            # # #",
+            "# #  ######### # # #",
+            "#  # #             #",
             "#  # #    #### ### #",
             "# ## #       # # # #",
             "#  # # ####  # # # #",
             "#  # # #  #  # # # #",
             "#  # # ## #        #",
             "# ## #    #  # # # #",
-            "#### ######  # # # #",
+            "# ## ######  # # # #",
             "#            #     #",
-            "#   #              #",
-            "#  #               #",
-            "#  ########### ### #",
             "#                  #",
+            "#  #            # ##",
+            "#  # ######### ### #",
+            "#  #               #",
             "####################"
-        };
-
+         * 
+            "####################",
+            "#         #        #",
+            "#  ## ##  #  ####  #",
+            "#  ## ##  #  ####  #",
+            "#                  #",
+            "#  ####      ####  #",
+            "#                  #",
+            "#####   ###    #####",
+            "#   # #  #  #  #   #",
+            "#   # ##   ##  #   #",
+            "#     #  #  #      #",
+            "#  #    ###    #   #",
+            "#  #           #   #",
+            "#     #######      #",
+            "#        #         #",
+            "#  ###   #    ###  #",
+            "#                  #",
+            "#     #######      #",
+            "#        #         #",
+            "####################"
+         */
         #endregion
         // Main game logic
         while (true)
         {
-            MoveEnemy();
+
+            // Move the enemy per 2 steps
+            if (enemyEvenMoveCounter % 2 == 0)
+            {
+                MoveEnemy1();
+                MoveEnemy2();
+            }
+
+            // pacman every step
             MovePacMan();
 
-            if (isGameOver)
-            {
-                break;
-            }
+            //Checking for impact when you add enemy you must add the enemy in this method (CheckForImpact())
             CheckForImpact();
 
-            PrintFrame();
 
-            Thread.Sleep(50);  // control game speed
+            //CheckForImpact gives true or false on isGameOver
+            if (isGameOver)
+            {
+
+                Console.Clear();
+                Console.WriteLine("Game Over");
+                // remove some lives points etc.
+                break;
+            }
+
+            PrintFrame();
+            enemyEvenMoveCounter++;
+            Thread.Sleep(100);  // control game speed
         }
     }
 
     private static void CheckForImpact()
     {
         //Check for impact
-        if (enemy.x == pacMan.x && enemy.y == pacMan.y)
+        if ((enemy.x == pacMan.x && enemy.y == pacMan.y) || (enemy2.x == pacMan.x && enemy2.y == pacMan.y))
         {
             Console.WriteLine("Game Over !");
             isGameOver = true;
@@ -119,6 +187,7 @@ class PacMan3D
         PrintLabyrinth(labyrinth);
         PrintElement(pacMan);
         PrintElement(enemy);
+        PrintElement(enemy2);
     }
 
     private static void MovePacMan()
@@ -160,7 +229,7 @@ class PacMan3D
         }
     }
 
-    private static void MoveEnemy()
+    private static void MoveEnemy1()
     {
         /*Move enemy
             1-right
@@ -169,26 +238,33 @@ class PacMan3D
             4-down
 
             */
+        var lastDirection = enemy.lastDirection;
+
 
         if (enemy.direction == "right" && (labyrinth[enemy.y][enemy.x + 1] == '#'))
         {
             enemy.direction = "down";
+            enemy.lastDirection = "right";
         }
 
         if (enemy.direction == "down" && (labyrinth[enemy.y + 1][enemy.x] == '#'))
         {
             enemy.direction = "left";
+            enemy.lastDirection = "down";
         }
 
         if (enemy.direction == "left" && (labyrinth[enemy.y][enemy.x - 1] == '#'))
         {
             enemy.direction = "up";
+            enemy.lastDirection = "left";
         }
 
         if (enemy.direction == "up" && labyrinth[enemy.y - 1][enemy.x] == '#')
         {
             enemy.direction = "right";
+            enemy.lastDirection = "up";
         }
+
 
 
 
@@ -209,7 +285,62 @@ class PacMan3D
             enemy.y -= 1;
         }
     }
+    private static void MoveEnemy2()
+    {
+        /*Move enemy2
+            1-right
+            2-left
+            3-up
+            4-down
 
+            */
+        var lastDirection = enemy2.lastDirection;
+
+
+        if (enemy2.direction == "right" && (labyrinth[enemy2.y][enemy2.x + 1] == '#'))
+        {
+            enemy2.direction = "down";
+            enemy2.lastDirection = "right";
+        }
+
+        if (enemy2.direction == "down" && (labyrinth[enemy2.y + 1][enemy2.x] == '#'))
+        {
+            enemy2.direction = "left";
+            enemy2.lastDirection = "down";
+        }
+
+        if (enemy2.direction == "left" && (labyrinth[enemy2.y][enemy2.x - 1] == '#'))
+        {
+            enemy2.direction = "up";
+            enemy2.lastDirection = "left";
+        }
+
+        if (enemy2.direction == "up" && labyrinth[enemy2.y - 1][enemy2.x] == '#')
+        {
+            enemy2.direction = "right";
+            enemy2.lastDirection = "up";
+        }
+
+
+
+
+        if (enemy2.direction == "right")
+        {
+            enemy2.x += 1;
+        }
+        if (enemy2.direction == "down")
+        {
+            enemy2.y += 1;
+        }
+        if (enemy2.direction == "left")
+        {
+            enemy2.x -= 1;
+        }
+        if (enemy2.direction == "up")
+        {
+            enemy2.y -= 1;
+        }
+    }
     private static void SetPlayfieldSize(out int playfieldHeight, out int playfieldWidth)
     {
         // set console size (screen resolution)
